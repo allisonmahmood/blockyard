@@ -1,108 +1,63 @@
+<div align="center">
+<img src="assets/blockyard.svg" alt="Blockyard icon" width="64" height="64">
+
 # Blockyard
 
-A native disk-space explorer for Omarchy. See where storage goes, drill into a treemap, and review selected files before moving them to Trash or permanently removing them.
+**See what's taking up space.**
 
-Built with Qt 6 / Qt Quick and C++20. No browser renderer, background daemon or account.
+A visual disk explorer for Omarchy. Find the big folders, inspect what's inside, and review what to remove.
 
-## What it does
+[Download for Omarchy](https://github.com/allisonmahmood/blockyard/releases/latest) · [Documentation](docs/usage.md) · [Report a bug](https://github.com/allisonmahmood/blockyard/issues)
 
-- Shows a nested treemap, a searchable folder list and details for the selected item.
-- Scans hidden files, counts hard-linked data once, distinguishes file length from allocated blocks, and reports unreadable or excluded areas.
-- Follows Omarchy's active theme and font while running. Supports current named palettes, older ANSI palettes and Alacritty theme files, including light themes.
-- Supports keyboard navigation, a review queue, Trash and explicit permanent removal.
-- Opens folders and the system Trash in your file manager.
+</div>
 
-A scan is a point-in-time observation. Scan results stay usable after cancellation, but cleanup requires a complete scan. Use Rescan to refresh changes made by other applications.
+![Blockyard showing a nested disk map and the size of a selected cache folder](docs/images/overview-dark.png)
 
-## Download for Omarchy / Arch
+*Tokyo Night. Screenshots use illustrative demo data.*
 
-Get the x86_64 Arch package from [GitHub Releases](https://github.com/allisonmahmood/blockyard/releases/latest). Download the `.pkg.tar.zst` file and `SHA256SUMS`, then run in that directory:
+## Find the folders that matter
+
+- See space as nested blocks. Bigger folders take up more of the map.
+- Double-click to explore, or use the folder list and search to find a name.
+- Compare space on disk, file sizes and file counts, including hidden files.
+- Mark items for review, check their paths, then choose Trash or permanent removal.
+
+## Matches your Omarchy theme
+
+Change your theme in Omarchy and Blockyard updates while it's open. Colors and fonts follow your desktop, including light themes.
+
+![The same Blockyard view using the Catppuccin Latte light theme](docs/images/overview-light.png)
+
+*Catppuccin Latte. Same app, same demo folders.*
+
+## Review before removing
+
+Blockyard shows the selected paths before acting. Trash keeps files recoverable; permanent removal has a separate confirmation. Nothing is selected for cleanup automatically.
+
+<details>
+<summary>See the cleanup review</summary>
+
+![The review dialog lists the exact selected path before offering Trash or permanent removal](docs/images/cleanup-review.png)
+
+</details>
+
+Trash usually retains disk space until emptied. Selected bytes can also differ from space freed because of snapshots or shared data. [Read how cleanup works](docs/engine.md).
+
+## Install
+
+Download the x86_64 package and `SHA256SUMS` from the [latest release](https://github.com/allisonmahmood/blockyard/releases/latest). On an up-to-date Omarchy or Arch installation:
 
 ```sh
 sha256sum --ignore-missing --check SHA256SUMS
 sudo pacman -U ./blockyard-0.1.0-1-x86_64.pkg.tar.zst
-blockyard
 ```
 
-The package uses system Qt libraries and requires an up-to-date Omarchy or Arch installation. Packages are currently unsigned; checksums verify the downloaded bytes. The release also includes source and a checksummed AUR recipe. AUR publication is pending account availability.
+Open **Blockyard** from your application launcher, or run `blockyard`.
 
-## Build and run
+Packages are currently unsigned. The release notes include verification details and source builds. AUR publication is planned when an account is available.
 
-On Omarchy / Arch, the build dependencies are `base-devel`, `cmake`, `ninja`, `qt6-base` and `qt6-declarative`. The desktop should have a monospace font and `fontconfig`. Qt's Wayland platform plugin comes from `qt6-wayland`.
+## More
 
-```sh
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j 4
-ctest --test-dir build --output-on-failure
-./build/blockyard
-```
+[Build from source](docs/development.md) · [Keyboard controls](docs/usage.md#navigation) · [How cleanup works](docs/engine.md) · [Theme support](docs/theming.md) · [Report an issue](https://github.com/allisonmahmood/blockyard/issues)
 
-Pass a folder to scan it instead of Home:
-
-```sh
-./build/blockyard /path/to/folder
-```
-
-This is a Linux application. Safe path resolution requires Linux 5.6 or later. Qt 6.4 or later and a C++20 compiler are required.
-
-## Install for your user
-
-```sh
-cmake --install build --prefix "$HOME/.local"
-```
-
-Launch **Blockyard** from your application launcher, or run `~/.local/bin/blockyard`. No root privileges, autostart service, shell hooks or desktop configuration changes are required.
-
-To uninstall, remove these installed files:
-
-- `~/.local/bin/blockyard`
-- `~/.local/share/applications/com.blockyard.app.desktop`
-- `~/.local/share/icons/hicolor/scalable/apps/blockyard.svg`
-- `~/.local/share/licenses/blockyard/LICENSE`
-
-## Navigation
-
-Click a block to inspect it. Double-click a folder to enter it. The Folders button opens a precise, size-sorted list, including entries too small to label on the map. Search covers names across the current scan.
-
-| Key | Action |
-| --- | --- |
-| Enter / L | Open selected folder |
-| Backspace / H | Parent folder |
-| Up / Down / J / K | Select entries in size order |
-| Space | Add or remove the selected item from review |
-| / | Search |
-| Ctrl+Enter | Review marked items |
-| Ctrl+R | Rescan |
-| Ctrl+L | Choose folder |
-| ? | Keyboard help |
-| Escape | Clear search, close a dialog, or stop scanning |
-
-The inspector moves into a Details dialog when the window is narrow. There are no continuous animations or polling scans.
-
-## Cleanup and size accounting
-
-**Selected bytes are not a promise of freed space.** Btrfs compression, reflinks and snapshots, hard links and files held open by running programs can make folder totals differ from disk usage. Blockyard shows allocated size, logical file size and filesystem capacity separately. Cleanup reports the observed change in available space, which other running applications may also affect.
-
-Trash is the default action. It preserves files and does not usually free space. Restore or empty those files using your file manager's system Trash. Blockyard writes standard freedesktop Trash metadata with the original path. It supports the home Trash on the same filesystem; if that is unavailable, it fails without substituting permanent removal.
-
-Permanent removal has a separate confirmation and cannot be undone by Blockyard. The engine rechecks selected objects and stages them into a private directory on the same filesystem before acting. If an item changes, the operation stops for that item and preserves what remains. Partial failures identify recovery locations.
-
-The scan root, mounted descendants, nested Btrfs subvolumes, incomplete scans, linked Git worktrees and recognized service/configuration data are protected. Scan other mounts separately. Blockyard does not run elevated, prune package stores, manage snapshots, or infer that an old folder is disposable. See [engine behavior and limits](docs/engine.md).
-
-## Omarchy integration
-
-Blockyard observes the active theme directory and repairs its watches when Omarchy replaces it. It reads colors as data and uses fontconfig for the active monospace font. Contrast adjustments keep labels readable. Temporary partial writes retain the last valid palette. See [theme compatibility](docs/theming.md).
-
-A `--theme-home DIRECTORY` option lets tests load copied theme fixtures without altering the desktop. `--screenshot FILE` saves the app window after a scan and exits. Neither option mutates scanned files.
-
-## Development
-
-[Architecture](docs/architecture.md) explains the modules and the chosen limits. [Validation](docs/validation.md) records release checks. Destructive tests use owned temporary fixtures only.
-
-[Release instructions](docs/releasing.md) describe the clean Arch build, package validation and publication process.
-
-The original static design study is in `design/options.html`. Atlas is the implemented direction; the other layouts are proposals, not additional app modes.
-
-## License
-
-MIT. See [LICENSE](LICENSE). Qt and other runtime dependencies retain their own licenses.
+Contributions and bug reports are welcome. [MIT licensed](LICENSE).
