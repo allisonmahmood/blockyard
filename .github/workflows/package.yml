@@ -16,7 +16,7 @@ jobs:
         run: >-
           pacman -Syu --noconfirm --needed
           git cmake ninja qt6-base qt6-declarative qt6-svg qt6-wayland
-          fontconfig dbus glib2 gvfs ttf-dejavu namcap desktop-file-utils
+          fontconfig hicolor-icon-theme dbus glib2 gvfs ttf-dejavu namcap desktop-file-utils
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -31,7 +31,8 @@ jobs:
             bash scripts/prepare-arch-release.sh
             cd dist/*
             makepkg --noconfirm
-            namcap PKGBUILD ./*.pkg.tar.zst
+            namcap PKGBUILD ./*.pkg.tar.zst | tee namcap.log
+            if grep -q " E: " namcap.log; then exit 1; fi
             sha256sum blockyard-*.tar.gz blockyard-*.pkg.tar.zst PKGBUILD .SRCINFO > SHA256SUMS
           '
       - name: Install and launch the package in the disposable runner

@@ -6,7 +6,9 @@ pkgdesc='Native disk-space treemap and reviewed cleanup for Omarchy'
 arch=('x86_64')
 url='https://github.com/allisonmahmood/blockyard'
 license=('MIT')
-depends=('fontconfig' 'glibc' 'libgcc' 'libstdc++' 'qt6-base' 'qt6-declarative' 'qt6-svg' 'qt6-wayland')
+# Font discovery and Qt's SVG/Wayland plugins are runtime dependencies even
+# though a shared-library dependency scan cannot see them.
+depends=('fontconfig' 'glibc' 'hicolor-icon-theme' 'libgcc' 'libstdc++' 'qt6-base' 'qt6-declarative' 'qt6-svg' 'qt6-wayland')
 makedepends=('cmake' 'ninja')
 checkdepends=('dbus' 'glib2' 'gvfs' 'ttf-dejavu')
 optdepends=('gvfs: browse and restore files through the system Trash')
