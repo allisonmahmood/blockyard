@@ -1,0 +1,23 @@
+{
+  "$schema": "https://t3.codes/schema/t3.json",
+  "iconPath": "assets/blockyard.svg",
+  "defaultThreadEnvMode": "worktree",
+  "scripts": [
+    {
+      "name": "Configure",
+      "command": "cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON",
+      "icon": "configure",
+      "runOnWorktreeCreate": true
+    },
+    {
+      "name": "Build",
+      "command": "cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON && cmake --build build -j 4",
+      "icon": "build"
+    },
+    {
+      "name": "Test",
+      "command": "cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON && cmake --build build -j 4 && QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software ctest --test-dir build --output-on-failure",
+      "icon": "test"
+    }
+  ]
+}

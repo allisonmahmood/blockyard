@@ -23,6 +23,14 @@ Pass a folder to scan it instead of Home:
 
 This is a Linux application. Safe path resolution requires Linux 5.6 or later. Qt 6.4 or later and a C++20 compiler are required.
 
+## T3 Code
+
+The repository's `t3.json` supplies the Blockyard icon and defaults new threads to separate worktrees. An explicit workspace preference in T3 Code's project settings overrides this default.
+
+Install the build dependencies above before creating a worktree. The **Configure** action runs CMake automatically when T3 Code creates one. **Build** configures and compiles the project, and **Test** builds before running all CTest suites with offscreen Qt rendering. Each action uses the current checkout's ignored `build/` directory.
+
+For a project already open in T3 Code, import the actions from this checkout in **Settings → Projects**.
+
 ## Install for your user
 
 ```sh
