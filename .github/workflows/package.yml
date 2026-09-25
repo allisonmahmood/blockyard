@@ -1,0 +1,64 @@
+name: Package for Arch
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  arch:
+    runs-on: ubuntu-24.04
+    container: archlinux:base-devel
+    timeout-minutes: 20
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 2
+      PACKAGER: Allison Mahmood
+    steps:
+      - name: Install build and test dependencies
+        run: >-
+          pacman -Syu --noconfirm --needed
+          git cmake ninja qt6-base qt6-declarative qt6-svg qt6-wayland
+          fontconfig dbus glib2 gvfs ttf-dejavu namcap desktop-file-utils
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Prepare unprivileged build user
+        run: |
+          useradd --create-home builder
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+      - name: Build source archive and package, including all tests
+        shell: bash
+        run: |
+          runuser -u builder -- bash -euo pipefail -c '
+            bash scripts/prepare-arch-release.sh
+            cd dist/*
+            makepkg --noconfirm
+            namcap PKGBUILD ./*.pkg.tar.zst
+            sha256sum blockyard-*.tar.gz blockyard-*.pkg.tar.zst PKGBUILD .SRCINFO > SHA256SUMS
+          '
+      - name: Install and launch the package in the disposable runner
+        shell: bash
+        env:
+          QT_QPA_PLATFORM: offscreen
+          QT_QUICK_BACKEND: software
+        run: |
+          pacman -U --noconfirm dist/*/*.pkg.tar.zst
+          desktop-file-validate /usr/share/applications/com.blockyard.app.desktop
+          runuser -u builder -- blockyard --version
+          runuser -u builder -- bash -euo pipefail -c '
+            fixture=$(mktemp -d)
+            trap '\''rm -rf -- "$fixture"'\'' EXIT
+            mkdir "$fixture/Storage"
+            printf "Package launch fixture\n" > "$fixture/Storage/example.txt"
+            blockyard "$fixture/Storage" --screenshot "$fixture/window.png"
+            test -s "$fixture/window.png"
+          '
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: blockyard-arch-release
+          if-no-files-found: error
+          include-hidden-files: true
+          path: |
+            dist/*/blockyard-*.tar.gz
+            dist/*/blockyard-*.pkg.tar.zst
+            dist/*/PKGBUILD
+            dist/*/.SRCINFO
+            dist/*/SHA256SUMS

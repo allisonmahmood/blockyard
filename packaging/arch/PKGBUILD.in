@@ -1,0 +1,34 @@
+# Maintainer: Allison Mahmood
+pkgname=blockyard
+pkgver=@VERSION@
+pkgrel=1
+pkgdesc='Native disk-space treemap and reviewed cleanup for Omarchy'
+arch=('x86_64')
+url='https://github.com/allisonmahmood/blockyard'
+license=('MIT')
+depends=('fontconfig' 'glibc' 'libgcc' 'libstdc++' 'qt6-base' 'qt6-declarative' 'qt6-svg' 'qt6-wayland')
+makedepends=('cmake' 'ninja')
+checkdepends=('dbus' 'glib2' 'gvfs' 'ttf-dejavu')
+optdepends=('gvfs: browse and restore files through the system Trash')
+options=('!debug')
+source=("$url/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('@SOURCE_SHA256@')
+
+build() {
+  cmake -S "$pkgname-$pkgver" -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_SKIP_INSTALL_RPATH=ON \
+    -DBUILD_TESTING=ON
+  cmake --build build
+}
+
+check() {
+  QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software \
+    ctest --test-dir build --output-on-failure
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

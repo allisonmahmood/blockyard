@@ -14,6 +14,18 @@ Built with Qt 6 / Qt Quick and C++20. No browser renderer, background daemon or 
 
 A scan is a point-in-time observation. Scan results stay usable after cancellation, but cleanup requires a complete scan. Use Rescan to refresh changes made by other applications.
 
+## Download for Omarchy / Arch
+
+Get the x86_64 Arch package from [GitHub Releases](https://github.com/allisonmahmood/blockyard/releases/latest). Download the `.pkg.tar.zst` file and `SHA256SUMS`, then run in that directory:
+
+```sh
+sha256sum --ignore-missing --check SHA256SUMS
+sudo pacman -U ./blockyard-0.1.0-1-x86_64.pkg.tar.zst
+blockyard
+```
+
+The package uses system Qt libraries and requires an up-to-date Omarchy or Arch installation. Packages are currently unsigned; checksums verify the downloaded bytes. The release also includes source and a checksummed AUR recipe. AUR publication is pending account availability.
+
 ## Build and run
 
 On Omarchy / Arch, the build dependencies are `base-devel`, `cmake`, `ninja`, `qt6-base` and `qt6-declarative`. The desktop should have a monospace font and `fontconfig`. Qt's Wayland platform plugin comes from `qt6-wayland`.
@@ -86,6 +98,8 @@ A `--theme-home DIRECTORY` option lets tests load copied theme fixtures without 
 ## Development
 
 [Architecture](docs/architecture.md) explains the modules and the chosen limits. [Validation](docs/validation.md) records release checks. Destructive tests use owned temporary fixtures only.
+
+[Release instructions](docs/releasing.md) describe the clean Arch build, package validation and publication process.
 
 The original static design study is in `design/options.html`. Atlas is the implemented direction; the other layouts are proposals, not additional app modes.
 
