@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls as Controls
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import QtQuick.Dialogs as NativeDialogs
@@ -484,7 +485,7 @@ ApplicationWindow {
 
     component AppDialog: Dialog {
         id: dialogControl
-        parent: Overlay.overlay
+        parent: Controls.Overlay.overlay
         anchors.centerIn: parent
         modal: true
         padding: 22
@@ -494,7 +495,7 @@ ApplicationWindow {
         palette.text: theme.foreground
         background: Rectangle { color: theme.background; border.color: theme.border; border.width: 1; radius: 3 }
         header: Label { textFormat: Text.PlainText; text: dialogControl.title; color: theme.foreground; font.pixelSize: 21; padding: 22; bottomPadding: 2; elide: Text.ElideRight }
-        Overlay.modal: Rectangle { color: Qt.rgba(theme.background.r, theme.background.g, theme.background.b, 0.75) }
+        Controls.Overlay.modal: Rectangle { color: Qt.rgba(theme.background.r, theme.background.g, theme.background.b, 0.75) }
     }
     AppDialog {
         id: reviewDialog
