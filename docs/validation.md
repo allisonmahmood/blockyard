@@ -4,7 +4,7 @@ Release checks are performed against the native Qt application, not a web previe
 
 ## Automated checks
 
-The CTest suite covers engine accounting and cleanup, Omarchy palette adaptation, asynchronous controller state, independent adversarial cleanup attempts, and the actual QML/treemap interface. Additional integrated application tests exercise the full scan/review/Trash/result flow with real filesystem fixtures.
+All six CTest suites pass locally on Qt 6.11 and in a clean Ubuntu 24.04 GitHub Actions build on Qt 6.4. They cover engine accounting and cleanup, Omarchy palette adaptation, asynchronous controller state, independent adversarial cleanup attempts, and the actual QML/treemap interface. Integrated application tests exercise the full scan/review/Trash/result flow, two-step permanent removal, and live theme replacement with real filesystem fixtures.
 
 Theme tests read every available stock palette on an Omarchy machine. All 22 installed stock palettes passed, including light themes. Synthetic tests also cover legacy ANSI and Alacritty formats, invalid intermediate files, directory replacement and symlink retargeting. Non-Omarchy CI runs the synthetic tests and explicitly skips the unavailable stock palette inventory.
 
@@ -15,6 +15,8 @@ Native UI tests check narrow-window map geometry, keyboard marking and review ca
 ## Manual and performance checks
 
 Native Wayland launches and offscreen Qt rendering are used to inspect laptop-size and narrow tiled layouts. Light and dark fixture palettes are also rendered. The initial launch exposed a toolbar taking too much vertical space and a font binding loop; both were corrected and added to the relevant checks.
+
+A native Wayland process recorded zero CPU ticks during a five-second idle sample after scanning a small fixture. This checks idle application CPU activity, not compositor or GPU power consumption. Light-theme rendering was also inspected at a 1.25 scale factor.
 
 A read-only metadata scan of a representative real developer home covered approximately 2.2 million entries. The initial implementation took about 18 seconds and peaked at about 1.08 GiB RSS. This is an observation from this machine, not a throughput guarantee. Small-file counts, filesystem cache, storage, and permissions affect performance. After per-entry allocation and path-processing reductions, a warm-cache scan of about 2.2 million entries took 5.30 seconds at about 1.08 GiB peak RSS. The cache state differs, so these figures are not a controlled before/after comparison.
 

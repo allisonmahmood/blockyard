@@ -63,7 +63,7 @@ ApplicationWindow {
         switch (category) {
         case "code": return theme.blue
         case "cache": return theme.yellow
-        case "media": return theme.magenta
+        case "media": return theme.cyan
         case "scratch": case "agent": return theme.orange
         case "git": case "documents": return theme.magenta
         default: return theme.green
