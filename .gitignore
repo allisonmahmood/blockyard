@@ -1,0 +1,10 @@
+node_modules/
+target/
+dist/
+design/*.png
+__pycache__/
+build*/
+.tools/
+local-notes/
+
+tests/**/*.png
