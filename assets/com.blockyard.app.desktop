@@ -5,6 +5,6 @@ Comment=Explore disk space and review cleanup
 Exec=blockyard
 Icon=blockyard
 Terminal=false
-Categories=System;Utility;FileTools;
+Categories=System;FileTools;
 Keywords=disk;storage;space;treemap;cleanup;
 StartupWMClass=com.blockyard.app
