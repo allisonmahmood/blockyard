@@ -19,4 +19,8 @@ checksum=$(sha256sum "$output/blockyard-$version.tar.gz" | cut -d ' ' -f 1)
 git show "$commit:packaging/arch/PKGBUILD.in" |
   sed -e "s/@VERSION@/$version/g" -e "s/@SOURCE_SHA256@/$checksum/g" > "$output/PKGBUILD"
 (cd "$output" && makepkg --printsrcinfo > .SRCINFO)
+# GitHub strips leading periods from asset names. Preserve .SRCINFO in a tarball.
+tar --sort=name --mtime="@$(git show -s --format=%ct "$commit")" \
+  --owner=0 --group=0 --numeric-owner -C "$output" -cf - PKGBUILD .SRCINFO |
+  gzip -n > "$output/blockyard-$version-arch-build.tar.gz"
 printf 'Prepared %s from commit %s\n' "$output" "$commit"

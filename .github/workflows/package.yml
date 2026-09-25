@@ -33,7 +33,7 @@ jobs:
             makepkg --noconfirm
             namcap PKGBUILD ./*.pkg.tar.zst | tee namcap.log
             if grep -q " E: " namcap.log; then exit 1; fi
-            sha256sum blockyard-*.tar.gz blockyard-*.pkg.tar.zst PKGBUILD .SRCINFO > SHA256SUMS
+            sha256sum blockyard-*.tar.gz blockyard-*.pkg.tar.zst > SHA256SUMS
           '
       - name: Install and launch the package in the disposable runner
         shell: bash
@@ -56,10 +56,7 @@ jobs:
         with:
           name: blockyard-arch-release
           if-no-files-found: error
-          include-hidden-files: true
           path: |
             dist/*/blockyard-*.tar.gz
             dist/*/blockyard-*.pkg.tar.zst
-            dist/*/PKGBUILD
-            dist/*/.SRCINFO
             dist/*/SHA256SUMS
